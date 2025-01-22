@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mora Sender</title>
   <style>
-    /* General Reset */
     * {
       margin: 0;
       padding: 0;
@@ -68,7 +67,8 @@
 
     input,
     textarea,
-    button {
+    button,
+    select {
       width: 100%;
       padding: 0.8rem;
       margin-top: 0.5rem;
@@ -109,6 +109,11 @@
     footer a:hover {
       text-decoration: underline;
     }
+
+    .message-format-options {
+      display: flex;
+      justify-content: space-between;
+    }
   </style>
 </head>
 <body>
@@ -121,26 +126,67 @@
       <div id="statusDiv" class="status">
         Emails: 0, Phones: 0
       </div>
+
+      <!-- Select Mode -->
+      <div class="input-group">
+        <label for="sendMode">Choose Mode:</label>
+        <select id="sendMode">
+          <option value="email">Email</option>
+          <option value="sms">SMS</option>
+        </select>
+      </div>
+
+      <!-- API or SMTP Selection -->
+      <div class="input-group">
+        <label for="connectionMode">Select Connection Type:</label>
+        <select id="connectionMode">
+          <option value="api">API</option>
+          <option value="smtp">SMTP</option>
+        </select>
+      </div>
+
+      <!-- File Upload -->
       <div class="input-group">
         <label for="fileInput">Upload Contact List:</label>
         <input type="file" id="fileInput" accept=".txt">
       </div>
+
+      <!-- Message Input -->
       <div class="input-group">
         <label for="messageBox">Message:</label>
         <textarea id="messageBox" placeholder="Enter your message here..."></textarea>
       </div>
+
+      <!-- Message Format Selection -->
+      <div class="message-format-options">
+        <div>
+          <label for="messageType">Message Format:</label>
+          <select id="messageType">
+            <option value="text">Text</option>
+            <option value="html">HTML</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Attachment Upload -->
       <div class="input-group">
         <label for="attachmentInput">Attach File (Optional):</label>
         <input type="file" id="attachmentInput">
       </div>
+
+      <!-- Schedule Input -->
       <div class="input-group">
         <label for="scheduleInput">Schedule:</label>
         <input type="datetime-local" id="scheduleInput">
       </div>
+
+      <!-- API Key -->
       <div class="input-group">
         <label for="apiKeyInput">API Key:</label>
         <input type="text" id="apiKeyInput" placeholder="Enter API Key">
       </div>
+
+      <!-- SMTP Configuration -->
       <form id="smtpConfigForm">
         <h3>SMTP Configuration:</h3>
         <input type="text" name="smtpHost" placeholder="SMTP Host">
@@ -149,11 +195,14 @@
         <input type="password" name="smtpPass" placeholder="SMTP Password">
         <button type="submit">Configure SMTP</button>
       </form>
+
+      <!-- Send Button -->
       <button id="sendButton" class="primary-button">Send</button>
     </section>
   </main>
+
   <footer>
-    <p>Built by Lordship | <a href="https://t.me/lordshipempire">Telegram: t.me/lordshipempire</a></p>
+    <p>Built by Lordship | <a href="https://t.me/lordshipempire" target="_blank">Telegram: t.me/lordshipempire</a></p>
   </footer>
   
   <script>
@@ -166,6 +215,9 @@
       const smtpConfigForm = document.getElementById("smtpConfigForm");
       const messageBox = document.getElementById("messageBox");
       const attachmentInput = document.getElementById("attachmentInput");
+      const sendModeSelect = document.getElementById("sendMode");
+      const connectionModeSelect = document.getElementById("connectionMode");
+      const messageTypeSelect = document.getElementById("messageType");
 
       let emailList = [];
       let phoneList = [];
@@ -230,6 +282,9 @@
         const message = messageBox.value;
         const attachment = attachmentInput.files[0];
         const schedule = scheduleInput.value;
+        const sendMode = sendModeSelect.value;
+        const connectionMode = connectionModeSelect.value;
+        const messageType = messageTypeSelect.value;
 
         if (!message) {
           alert("Message cannot be empty!");
@@ -241,32 +296,39 @@
           return;
         }
 
-        if (emailList.length === 0 && phoneList.length === 0) {
-          alert("No recipients found!");
+        if (sendMode === "email" && emailList.length === 0) {
+          alert("No email recipients found!");
           return;
         }
 
-        simulateSending(emailList, phoneList, message, attachment, schedule);
+        if (sendMode === "sms" && phoneList.length === 0) {
+          alert("No phone recipients found!");
+          return;
+        }
+
+        simulateSending(sendMode, connectionMode, message, attachment, schedule, messageType);
       });
 
-      function simulateSending(emails, phones, message, attachment, schedule) {
+      function simulateSending(sendMode, connectionMode, message, attachment, schedule, messageType) {
         let sent = 0;
         let failed = 0;
 
-        emails.forEach((email) => {
-          const success = Math.random() > 0.1;
-          if (success) sent++;
-          else failed++;
-        });
-
-        phones.forEach((phone) => {
-          const success = Math.random() > 0.1;
-          if (success) sent++;
-          else failed++;
-        });
+        if (sendMode === "email") {
+          emailList.forEach((email) => {
+            const success = Math.random() > 0.1;
+            if (success) sent++;
+            else failed++;
+          });
+        } else if (sendMode === "sms") {
+          phoneList.forEach((phone) => {
+            const success = Math.random() > 0.1;
+            if (success) sent++;
+            else failed++;
+          });
+        }
 
         alert(
-          `Messages Sent: ${sent}, Failed: ${failed}. Scheduled for: ${
+          `${sendMode === "email" ? "Emails" : "SMS"} Sent: ${sent}, Failed: ${failed}. Scheduled for: ${
             schedule || "Now"
           }.`
         );

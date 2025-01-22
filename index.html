@@ -1,189 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mora Mass Sender</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f4f4f4;
-            color: #333;
-        }
-        header {
-            background: #4CAF50;
-            color: white;
-            padding: 1rem;
-            text-align: center;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            background: #333;
-        }
-        nav a {
-            color: white;
-            padding: 1rem;
-            text-decoration: none;
-            display: block;
-        }
-        nav a:hover {
-            background: #4CAF50;
-        }
-        main {
-            padding: 1rem;
-        }
-        footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 1rem;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-        #clock {
-            font-size: 1.5rem;
-            margin: 0.5rem 0;
-        }
-        button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            margin: 1rem 0;
-        }
-        button:hover {
-            background: #45a049;
-        }
-        .hidden {
-            display: none;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        input, textarea, select {
-            width: 100%;
-            padding: 0.5rem;
-            margin-top: 0.5rem;
-        }
-        progress {
-            width: 100%;
-            height: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mora Sender</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Mora Mass Sender</h1>
-        <p id="clock"></p>
-    </header>
-    <nav>
-        <a href="#" data-section="sms-section">Send SMS</a>
-        <a href="#" data-section="email-section">Send Email</a>
-        <a href="#" data-section="logs-section">Logs</a>
-    </nav>
-    <main id="main-content">
-        <section id="sms-section" class="hidden">
-            <h2>Send Bulk SMS</h2>
-            <form id="sms-form">
-                <div class="form-group">
-                    <label for="sms-numbers">Phone Numbers (comma-separated):</label>
-                    <textarea id="sms-numbers" placeholder="Enter phone numbers"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="sms-message">Message:</label>
-                    <textarea id="sms-message" placeholder="Enter your message"></textarea>
-                </div>
-                <button type="submit">Send SMS</button>
-            </form>
-            <progress id="sms-progress" value="0" max="100" class="hidden"></progress>
-            <p id="sms-status"></p>
-        </section>
-        <section id="email-section" class="hidden">
-            <h2>Send Bulk Emails</h2>
-            <form id="email-form">
-                <div class="form-group">
-                    <label for="email-recipients">Recipient Emails (comma-separated):</label>
-                    <textarea id="email-recipients" placeholder="Enter recipient emails"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="email-subject">Subject:</label>
-                    <input id="email-subject" type="text" placeholder="Enter subject">
-                </div>
-                <div class="form-group">
-                    <label for="email-message">Message:</label>
-                    <textarea id="email-message" placeholder="Enter your message"></textarea>
-                </div>
-                <button type="submit">Send Email</button>
-            </form>
-            <progress id="email-progress" value="0" max="100" class="hidden"></progress>
-            <p id="email-status"></p>
-        </section>
-        <section id="logs-section" class="hidden">
-            <h2>Delivery Logs</h2>
-            <ul id="logs-list">
-                <!-- Logs will appear here -->
-            </ul>
-        </section>
-    </main>
-    <footer>
-        <p>Built by Lordship | Telegram: <a href="https://t.me/lordshipempire" target="_blank">t.me/lordshipempire</a></p>
-    </footer>
-    <script>
-        // Dynamic navigation
-        const navLinks = document.querySelectorAll("nav a");
-        const sections = document.querySelectorAll("main section");
-        navLinks.forEach(link => {
-            link.addEventListener("click", e => {
-                e.preventDefault();
-                const target = link.dataset.section;
-                sections.forEach(section => section.classList.add("hidden"));
-                document.getElementById(target).classList.remove("hidden");
-            });
-        });
-
-        // Clock
-        const clock = document.getElementById("clock");
-        setInterval(() => {
-            const now = new Date();
-            clock.textContent = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
-        }, 1000);
-
-        // Form Handlers
-        const logsList = document.getElementById("logs-list");
-
-        // SMS Form
-        document.getElementById("sms-form").addEventListener("submit", e => {
-            e.preventDefault();
-            const numbers = document.getElementById("sms-numbers").value.split(",").map(num => num.trim());
-            const message = document.getElementById("sms-message").value;
-            document.getElementById("sms-progress").classList.remove("hidden");
-            document.getElementById("sms-status").textContent = `Sending to ${numbers.length} recipients...`;
-            setTimeout(() => {
-                logsList.innerHTML += `<li>SMS sent to ${numbers.join(", ")}</li>`;
-                document.getElementById("sms-status").textContent = "SMS sent successfully!";
-                document.getElementById("sms-progress").classList.add("hidden");
-            }, 2000); // Simulated delay
-        });
-
-        // Email Form
-        document.getElementById("email-form").addEventListener("submit", e => {
-            e.preventDefault();
-            const recipients = document.getElementById("email-recipients").value.split(",").map(email => email.trim());
-            const subject = document.getElementById("email-subject").value;
-            const message = document.getElementById("email-message").value;
-            document.getElementById("email-progress").classList.remove("hidden");
-            document.getElementById("email-status").textContent = `Sending to ${recipients.length} recipients...`;
-            setTimeout(() => {
-                logsList.innerHTML += `<li>Email sent to ${recipients.join(", ")}</li>`;
-                document.getElementById("email-status").textContent = "Email sent successfully!";
-                document.getElementById("email-progress").classList.add("hidden");
-            }, 2000); // Simulated delay
-        });
-    </script>
+  <header>
+    <h1>Mora Sender</h1>
+    <p>The ultimate solution to anonymous mailing and texting</p>
+  </header>
+  <main>
+    <section id="dashboard">
+      <div id="statusDiv" class="status">
+        Emails: 0, Phones: 0
+      </div>
+      <div class="input-group">
+        <label for="fileInput">Upload Contact List:</label>
+        <input type="file" id="fileInput" accept=".txt">
+      </div>
+      <div class="input-group">
+        <label for="messageBox">Message:</label>
+        <textarea id="messageBox" placeholder="Enter your message here..."></textarea>
+      </div>
+      <div class="input-group">
+        <label for="attachmentInput">Attach File (Optional):</label>
+        <input type="file" id="attachmentInput">
+      </div>
+      <div class="input-group">
+        <label for="scheduleInput">Schedule:</label>
+        <input type="datetime-local" id="scheduleInput">
+      </div>
+      <div class="input-group">
+        <label for="apiKeyInput">API Key:</label>
+        <input type="text" id="apiKeyInput" placeholder="Enter API Key">
+      </div>
+      <form id="smtpConfigForm">
+        <h3>SMTP Configuration:</h3>
+        <input type="text" name="smtpHost" placeholder="SMTP Host">
+        <input type="number" name="smtpPort" placeholder="SMTP Port">
+        <input type="text" name="smtpUser" placeholder="SMTP Username">
+        <input type="password" name="smtpPass" placeholder="SMTP Password">
+        <button type="submit">Configure SMTP</button>
+      </form>
+      <button id="sendButton" class="primary-button">Send</button>
+    </section>
+  </main>
+  <footer>
+    <p>Built by Lordship | <a href="https://t.me/lordshipempire">Telegram: t.me/lordshipempire</a></p>
+  </footer>
 </body>
 </html>

